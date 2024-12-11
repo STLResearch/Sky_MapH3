@@ -3,10 +3,13 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 ## Getting Started
 
 First- install the dependency node modules:
-npm install 
+and then  
 then, run the development server:
 
 ```bash
+npm install
+# and
+
 npm run dev
 # or
 yarn dev
