@@ -35,7 +35,7 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-key functions of project:---
+## key functions of project:---
 
 *Multi-select functionality to choose and draw hexes of varying sizes on the map.
 
@@ -48,5 +48,7 @@ key functions of project:---
 *Display of the selected hex's scale in Km, providing an idea of its size.
 
 *User can access their current location by using a button (locate me).
+
+## NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN : use you own token in .env.local file.
 
 
