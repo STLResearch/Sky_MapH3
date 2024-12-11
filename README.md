@@ -34,3 +34,19 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+key functions of project:---
+
+*Multi-select functionality to choose and draw hexes of varying sizes on the map.
+
+*Toggle between satellite view and basic view of the MapBox map.
+
+*Click functionality to select any part of the map, highlighting the hex and displaying its details.
+
+*User can search the hex details by using the hex index also.
+
+*Display of the selected hex's scale in Km, providing an idea of its size.
+
+*User can access their current location by using a button (locate me).
+
+
