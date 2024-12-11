@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import Map, { Source, Layer, FlyToInterpolator, Popup } from "react-map-gl";
+import Map, { Source, Layer,  Popup } from "react-map-gl";
 import { latLngToCell, cellToBoundary, cellArea } from "h3-js";
 import HexDetails from "./HexDetails";
 
@@ -104,7 +104,7 @@ const HexMap = () => {
         longitude: centerLng,
         zoom: 12,
         transitionDuration: 1000,
-        transitionInterpolator: new FlyToInterpolator(),
+        //transitionInterpolator: new FlyToInterpolator(),
       });
       const selectedBoundary = cellToBoundary(hexIndex, true);
       const area = cellArea(hexIndex, "m2");
