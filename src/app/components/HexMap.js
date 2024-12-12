@@ -114,8 +114,8 @@ const HexMap = ({ setHexDetails }) => {
       });
       const selectedBoundary = cellToBoundary(hexIndex, true);
       const area = cellArea(hexIndex, "m2");
-      setSelectedHexes([{ hexIndex, boundary: selectedBoundary, area, hexSize,baseCell,icosa}]);
-       //const baseCell = getBaseCellNumber(hexIndex); // Get Base cell number using the correct method
+      setSelectedHexes([{ hexIndex, boundary: selectedBoundary, area, hexSize}]);
+       
 
     }
   };
@@ -153,10 +153,11 @@ const HexMap = ({ setHexDetails }) => {
           style={{ width: "100%", height: "100%" }}
           mapStyle={mapStyle}
           mapboxAccessToken={mapboxToken}
+          onMove={(event) => setViewport(event.viewState)}
           attributionControl={false}
           onMoveEnd={onMapMove}
           onClick={handleMapClick}
-          onMouseMove={handleMouseMove} // Attach the hover event
+          onMouseMove={handleMouseMove} 
         >
           <Source
             id="hexes"
