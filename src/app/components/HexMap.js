@@ -1,9 +1,9 @@
-import React, { useState, useCallback } from "react";
-import Map, { Source, Layer,  Popup } from "react-map-gl";
-import { latLngToCell, cellToBoundary, cellArea } from "h3-js";
+import React, { useState, useCallback, useEffect } from "react";
+import Map, { Source, Layer, Popup } from "react-map-gl";
+import { latLngToCell, cellToBoundary, cellArea ,getBaseCellNumber ,getIcosahedronFaces } from "h3-js";
 import HexDetails from "./HexDetails";
 
-const HexMap = () => {
+const HexMap = ({ setHexDetails }) => {
   const [viewport, setViewport] = useState({
     latitude: 37.7749,
     longitude: -122.4194,
@@ -18,6 +18,8 @@ const HexMap = () => {
   const [hoverPosition, setHoverPosition] = useState(null); // Cursor position
 
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+  useEffect(() => {  },
+    [selectedHexes, setHexDetails]);
 
   const drawHexagons = useCallback(
     (bounds) => {
@@ -53,6 +55,10 @@ const HexMap = () => {
     const hexIndex = latLngToCell(lat, lng, hexSize);
     const boundary = cellToBoundary(hexIndex, true);
     const area = cellArea(hexIndex, "m2");
+    const baseCell = getBaseCellNumber(hexIndex); // Get Base cell number using the correct method
+    const icosa = getIcosahedronFaces(hexIndex)
+    //const getNum = getNumCells(hexIndex)
+    //const HexagonEdgeLengthAvg = getHexagonEdgeLengthAvg(hexIndex, hexIndex.UNITS.km)
 
     const alreadySelected = selectedHexes.some((hex) => hex.hexIndex === hexIndex);
     if (alreadySelected) {
@@ -60,7 +66,7 @@ const HexMap = () => {
     } else {
       setSelectedHexes((prev) => [
         ...prev,
-        { hexIndex, boundary, area, hexSize },
+        { hexIndex, boundary, area, hexSize, baseCell,icosa},
       ]);
     }
   };
@@ -108,7 +114,9 @@ const HexMap = () => {
       });
       const selectedBoundary = cellToBoundary(hexIndex, true);
       const area = cellArea(hexIndex, "m2");
-      setSelectedHexes([{ hexIndex, boundary: selectedBoundary, area, hexSize }]);
+      setSelectedHexes([{ hexIndex, boundary: selectedBoundary, area, hexSize,baseCell,icosa}]);
+       //const baseCell = getBaseCellNumber(hexIndex); // Get Base cell number using the correct method
+
     }
   };
 
