@@ -101,13 +101,13 @@ const HexMap = ({ setHexDetails }) => {
   const handleSearch = () => {
     const hexIndex = searchHexIndex.trim();
     if (hexIndex) {
-      const boundary = cellToBoundary(hexIndex, true);
-      const centerLat = (boundary[0][0] + boundary[4][0]) / 2;
-      const centerLng = (boundary[0][1] + boundary[4][1]) / 2;
+     // const boundary = cellToBoundary(hexIndex, true);
+     // const centerLat = (boundary[0][0] + boundary[4][0]) / 2;
+     // const centerLng = (boundary[0][1] + boundary[4][1]) / 2;
       setViewport({
         ...viewport,
-        latitude: centerLat,
-        longitude: centerLng,
+        latitude: 37.7749,
+        longitude: -122.4194,
         zoom: 12,
         transitionDuration: 1000,
         //transitionInterpolator: new FlyToInterpolator(),
@@ -274,7 +274,7 @@ const HexMap = ({ setHexDetails }) => {
           type="text"
           value={searchHexIndex}
           onChange={(e) => setSearchHexIndex(e.target.value)}
-          placeholder="Hex Index"
+          placeholder="Search by- Hex Index"
           className="p-1 w-full rounded bg-gray-800 text-white border border-gray-700 focus:outline-none text-sm"
         />
         <button
