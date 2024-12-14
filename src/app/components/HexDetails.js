@@ -31,7 +31,7 @@ const HexDetails = ({ hexes, hexSize }) => {
             
             <p>
               <strong>Geometrical Area:</strong>{" "}
-              {hex.area ? hex.area.toFixed(2) : "N/A"} km²
+              {hex.area ? hex.area.toFixed(2) : "N/A"} m²
             </p>
             <p>
               <strong>Hex Edge length:</strong> {perimeter.toFixed(2)} m
