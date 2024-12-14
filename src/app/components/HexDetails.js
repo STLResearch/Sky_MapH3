@@ -13,7 +13,7 @@ const HexDetails = ({ hexes, hexSize }) => {
           const nextPoint = arr[(i + 1) % arr.length];
           const from = turf.point(point);
           const to = turf.point(nextPoint);
-          return total + turf.distance(from, to, { units: 'kilometers' });
+          return total + turf.distance(from, to, { units: 'kilometers' })*1000;
         }, 0);
 
         return (
@@ -34,9 +34,9 @@ const HexDetails = ({ hexes, hexSize }) => {
               {hex.area ? hex.area.toFixed(2) : "N/A"} km²
             </p>
             <p>
-              <strong>Hex Edge length:</strong> {perimeter.toFixed(2)} km
+              <strong>Hex Edge length:</strong> {perimeter.toFixed(2)} m
             </p>
-            <p><strong>Is pentagon:</strong>No</p>
+             <strong> Is Pentagon:</strong>  {hex.isPentagon }
             <p>
               <strong>Hex Resolution:</strong> {hexSize}
             </p>
