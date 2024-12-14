@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import Map, { Source, Layer, Popup } from "react-map-gl";
-import { latLngToCell, cellToBoundary, cellArea ,getBaseCellNumber ,getIcosahedronFaces } from "h3-js";
+import { latLngToCell, cellToBoundary, cellArea ,getBaseCellNumber ,getIcosahedronFaces,isPentagon} from "h3-js";
 import HexDetails from "./HexDetails";
 
 const HexMap = ({ setHexDetails }) => {
@@ -57,6 +57,7 @@ const HexMap = ({ setHexDetails }) => {
     const area = cellArea(hexIndex, "m2");
     const baseCell = getBaseCellNumber(hexIndex); // Get Base cell number using the correct method
     const icosa = getIcosahedronFaces(hexIndex)
+    const isPent = isPentagon(hexIndex);
     //const getNum = getNumCells(hexIndex)
     //const HexagonEdgeLengthAvg = getHexagonEdgeLengthAvg(hexIndex, hexIndex.UNITS.km)
 
@@ -66,7 +67,7 @@ const HexMap = ({ setHexDetails }) => {
     } else {
       setSelectedHexes((prev) => [
         ...prev,
-        { hexIndex, boundary, area, hexSize, baseCell,icosa},
+        { hexIndex, boundary, area, hexSize, baseCell,icosa,isPentagon: isPent ? "Yes" : "No"},
       ]);
     }
   };
