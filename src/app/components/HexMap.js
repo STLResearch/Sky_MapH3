@@ -1,25 +1,25 @@
 import React, { useState, useCallback, useEffect } from "react";
 import Map, { Source, Layer, Popup } from "react-map-gl";
-import { latLngToCell, cellToBoundary, cellArea ,getBaseCellNumber ,getIcosahedronFaces,isPentagon} from "h3-js";
+import { latLngToCell, cellToBoundary, cellArea, getBaseCellNumber, getIcosahedronFaces, isPentagon } from "h3-js";
 import HexDetails from "./HexDetails";
 
 const HexMap = ({ setHexDetails }) => {
   const [viewport, setViewport] = useState({
     latitude: 37.7749,
     longitude: -122.4194,
-    zoom: 10,
+    zoom: 12,
   });
   const [selectedHexes, setSelectedHexes] = useState([]);
   const [hexes, setHexes] = useState([]);
   const [hexSize, setHexSize] = useState(7);
   const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/streets-v11");
   const [searchHexIndex, setSearchHexIndex] = useState("");
-  const [hoverHex, setHoverHex] = useState(null); // Hovered hex index
-  const [hoverPosition, setHoverPosition] = useState(null); // Cursor position
+  const [hoverHex, setHoverHex] = useState(null);
+  const [hoverPosition, setHoverPosition] = useState(null);
 
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
-  useEffect(() => {  },
-    [selectedHexes, setHexDetails]);
+
+  useEffect(() => {}, [selectedHexes, setHexDetails]);
 
   const drawHexagons = useCallback(
     (bounds) => {
@@ -55,11 +55,9 @@ const HexMap = ({ setHexDetails }) => {
     const hexIndex = latLngToCell(lat, lng, hexSize);
     const boundary = cellToBoundary(hexIndex, true);
     const area = cellArea(hexIndex, "m2");
-    const baseCell = getBaseCellNumber(hexIndex); // Get Base cell number using the correct method
-    const icosa = getIcosahedronFaces(hexIndex)
+    const baseCell = getBaseCellNumber(hexIndex);
+    const icosa = getIcosahedronFaces(hexIndex);
     const isPent = isPentagon(hexIndex);
-    //const getNum = getNumCells(hexIndex)
-    //const HexagonEdgeLengthAvg = getHexagonEdgeLengthAvg(hexIndex, hexIndex.UNITS.km)
 
     const alreadySelected = selectedHexes.some((hex) => hex.hexIndex === hexIndex);
     if (alreadySelected) {
@@ -67,7 +65,7 @@ const HexMap = ({ setHexDetails }) => {
     } else {
       setSelectedHexes((prev) => [
         ...prev,
-        { hexIndex, boundary, area, hexSize, baseCell,icosa,isPentagon: isPent ? "Yes" : "No"},
+        { hexIndex, boundary, area, hexSize, baseCell, icosa, isPentagon: isPent ? "Yes" : "No" },
       ]);
     }
   };
@@ -75,7 +73,6 @@ const HexMap = ({ setHexDetails }) => {
   const handleMouseMove = (event) => {
     const { lat, lng } = event.lngLat;
 
-    // Determine which hex the cursor is hovering over
     const hexIndex = latLngToCell(lat, lng, hexSize);
     if (hexes.includes(hexIndex)) {
       setHoverHex(hexIndex);
@@ -102,22 +99,16 @@ const HexMap = ({ setHexDetails }) => {
   const handleSearch = () => {
     const hexIndex = searchHexIndex.trim();
     if (hexIndex) {
-     // const boundary = cellToBoundary(hexIndex, true);
-     // const centerLat = (boundary[0][0] + boundary[4][0]) / 2;
-     // const centerLng = (boundary[0][1] + boundary[4][1]) / 2;
       setViewport({
         ...viewport,
         latitude: 37.7749,
         longitude: -122.4194,
         zoom: 12,
         transitionDuration: 1000,
-        //transitionInterpolator: new FlyToInterpolator(),
       });
       const selectedBoundary = cellToBoundary(hexIndex, true);
       const area = cellArea(hexIndex, "m2");
-      setSelectedHexes([{ hexIndex, boundary: selectedBoundary, area, hexSize}]);
-       
-
+      setSelectedHexes([{ hexIndex, boundary: selectedBoundary, area, hexSize }]);
     }
   };
 
@@ -146,6 +137,14 @@ const HexMap = ({ setHexDetails }) => {
     );
   };
 
+  const zoomIn = () => {
+    setViewport((prev) => ({ ...prev, zoom: Math.min(prev.zoom + 1, 22) }));
+  };
+
+  const zoomOut = () => {
+    setViewport((prev) => ({ ...prev, zoom: Math.max(prev.zoom - 1, 0) }));
+  };
+
   return (
     <div className="flex flex-col lg:flex-row w-full h-screen overflow-hidden relative">
       <div className="relative lg:w-2/3 w-full h-full overflow-hidden">
@@ -158,7 +157,7 @@ const HexMap = ({ setHexDetails }) => {
           attributionControl={false}
           onMoveEnd={onMapMove}
           onClick={handleMapClick}
-          onMouseMove={handleMouseMove} 
+          onMouseMove={handleMouseMove}
         >
           <Source
             id="hexes"
@@ -215,7 +214,6 @@ const HexMap = ({ setHexDetails }) => {
             </Source>
           ))}
 
-          {/* Hover Pop-up */}
           {hoverHex && hoverPosition && (
             <Popup
               latitude={hoverPosition.lat}
@@ -235,6 +233,21 @@ const HexMap = ({ setHexDetails }) => {
         >
           Locate me 📍
         </button>
+
+        <div className="absolute bottom-20 right-4 flex flex-col space-y-2 z-10">
+          <button
+            onClick={zoomIn}
+            className="bg-green-500 text-white p-2 rounded-full shadow-lg hover:bg-green-600"
+          >
+            ➕ Zoom In
+          </button>
+          <button
+            onClick={zoomOut}
+            className="bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-red-600"
+          >
+            ➖ Zoom Out
+          </button>
+        </div>
       </div>
 
       <div className="lg:w-1/3 w-full h-full bg-gray-900 text-white p-4 overflow-auto">
@@ -275,7 +288,7 @@ const HexMap = ({ setHexDetails }) => {
           type="text"
           value={searchHexIndex}
           onChange={(e) => setSearchHexIndex(e.target.value)}
-          placeholder="Search by- Hex Index"
+          placeholder="Search by Hex Index"
           className="p-1 w-full rounded bg-gray-800 text-white border border-gray-700 focus:outline-none text-sm"
         />
         <button
