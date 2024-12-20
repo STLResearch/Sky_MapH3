@@ -3,7 +3,7 @@ import Map, { Source, Layer, Popup } from "react-map-gl";
 import { latLngToCell, cellToBoundary, cellArea, getBaseCellNumber, getIcosahedronFaces, isPentagon } from "h3-js";
 import HexDetails from "./HexDetails";
 
-const HexMap = () => {
+const HexMap = ({ setHexDetails }) => {
   const [viewport, setViewport] = useState({
     latitude: 37.7749,
     longitude: -122.4194,
@@ -29,13 +29,20 @@ const HexMap = () => {
     const icosa = getIcosahedronFaces(hexIndex);
     const isPent = isPentagon(hexIndex);
 
+    // Use setHexDetails if it's a function
+    if (typeof setHexDetails === "function") {
+      setHexDetails([{ hexIndex, boundary, area, hexSize,baseCell,icosa,isPent}])
+    } else {
+      console.error("setHexDetails is not a function");
+    }
+
     const alreadySelected = selectedHexes.some((hex) => hex.hexIndex === hexIndex);
     if (alreadySelected) {
       setSelectedHexes((prev) => prev.filter((hex) => hex.hexIndex !== hexIndex));
     } else {
       setSelectedHexes((prev) => [
         ...prev,
-        { hexIndex, boundary, area, hexSize, baseCell, icosa, isPentagon: isPent ? "Yes" : "No" },
+        { hexIndex, boundary, area, hexSize, baseCell, icosa, isPentagon: isPent ? "Yes" : "No"   },
       ]);
     }
   };
