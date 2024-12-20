@@ -1,16 +1,15 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState } from "react";
 import Map, { Source, Layer, Popup } from "react-map-gl";
 import { latLngToCell, cellToBoundary, cellArea, getBaseCellNumber, getIcosahedronFaces, isPentagon } from "h3-js";
 import HexDetails from "./HexDetails";
 
-const HexMap = ({ setHexDetails }) => {
+const HexMap = () => {
   const [viewport, setViewport] = useState({
     latitude: 37.7749,
     longitude: -122.4194,
     zoom: 12,
   });
   const [selectedHexes, setSelectedHexes] = useState([]);
-  const [hexes, setHexes] = useState([]);
   const [hexSize, setHexSize] = useState(7);
   const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/streets-v11");
   const [searchHexIndex, setSearchHexIndex] = useState("");
@@ -18,35 +17,6 @@ const HexMap = ({ setHexDetails }) => {
   const [hoverPosition, setHoverPosition] = useState(null);
 
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
-
-  useEffect(() => {}, [selectedHexes, setHexDetails]);
-
-  const drawHexagons = useCallback(
-    (bounds) => {
-      const sw = bounds.getSouthWest();
-      const ne = bounds.getNorthEast();
-
-      const swLat = sw.lat;
-      const swLng = sw.lng;
-      const neLat = ne.lat;
-      const neLng = ne.lng;
-
-      const hexagons = [];
-      for (let lat = swLat; lat <= neLat; lat += 0.1) {
-        for (let lng = swLng; lng <= neLng; lng += 0.1) {
-          const hexIndex = latLngToCell(lat, lng, hexSize);
-          hexagons.push(hexIndex);
-        }
-      }
-      setHexes([...new Set(hexagons)]);
-    },
-    [hexSize]
-  );
-
-  const onMapMove = (event) => {
-    const mapBounds = event.target.getBounds();
-    drawHexagons(mapBounds);
-  };
 
   const handleMapClick = (event) => {
     const { lat, lng } = event.lngLat;
@@ -72,9 +42,10 @@ const HexMap = ({ setHexDetails }) => {
 
   const handleMouseMove = (event) => {
     const { lat, lng } = event.lngLat;
-
     const hexIndex = latLngToCell(lat, lng, hexSize);
-    if (hexes.includes(hexIndex)) {
+
+    const isSelected = selectedHexes.some((hex) => hex.hexIndex === hexIndex);
+    if (isSelected) {
       setHoverHex(hexIndex);
       setHoverPosition({ lat, lng });
     } else {
@@ -85,7 +56,6 @@ const HexMap = ({ setHexDetails }) => {
 
   const handleHexSizeChange = (event) => {
     setHexSize(parseInt(event.target.value, 10));
-    setHexes([]);
   };
 
   const toggleMapStyle = () => {
@@ -99,16 +69,16 @@ const HexMap = ({ setHexDetails }) => {
   const handleSearch = () => {
     const hexIndex = searchHexIndex.trim();
     if (hexIndex) {
-      setViewport({
-        ...viewport,
+      const selectedBoundary = cellToBoundary(hexIndex, true);
+      const area = cellArea(hexIndex, "m2");
+      setSelectedHexes([{ hexIndex, boundary: selectedBoundary, area, hexSize }]);
+      setViewport((prev) => ({
+        ...prev,
         latitude: 37.7749,
         longitude: -122.4194,
         zoom: 12,
         transitionDuration: 1000,
-      });
-      const selectedBoundary = cellToBoundary(hexIndex, true);
-      const area = cellArea(hexIndex, "m2");
-      setSelectedHexes([{ hexIndex, boundary: selectedBoundary, area, hexSize }]);
+      }));
     }
   };
 
@@ -155,35 +125,9 @@ const HexMap = ({ setHexDetails }) => {
           mapboxAccessToken={mapboxToken}
           onMove={(event) => setViewport(event.viewState)}
           attributionControl={false}
-          onMoveEnd={onMapMove}
           onClick={handleMapClick}
           onMouseMove={handleMouseMove}
         >
-          <Source
-            id="hexes"
-            type="geojson"
-            data={{
-              type: "FeatureCollection",
-              features: hexes.map((hex) => ({
-                type: "Feature",
-                geometry: {
-                  type: "Polygon",
-                  coordinates: [cellToBoundary(hex, true)],
-                },
-                properties: {},
-              })),
-            }}
-          >
-            <Layer
-              id="hex-layer"
-              type="fill"
-              paint={{
-                "fill-color": "#088",
-                "fill-opacity": 0.4,
-              }}
-            />
-          </Source>
-
           {selectedHexes.map((hex, index) => (
             <Source
               key={index}
@@ -251,14 +195,6 @@ const HexMap = ({ setHexDetails }) => {
       </div>
 
       <div className="lg:w-1/3 w-full h-full bg-gray-900 text-white p-4 overflow-auto">
-        <div className="mb-4">
-          <span className="text-white text-lg">
-            Selected Hexes: {selectedHexes.length}
-          </span>
-        </div>
-        <div className="mb-4">
-          <span className="text-white text-lg">Hex Resolution: {hexSize}</span>
-        </div>
         <HexDetails hexes={selectedHexes} hexSize={hexSize} />
       </div>
 
